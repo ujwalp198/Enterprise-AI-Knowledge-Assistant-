@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    container_name: eaka-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: enterprise_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: eaka-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  pgdata:
+  qdrant_data:

@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model Organization {
+  id        String     @id @default(uuid())
+  name      String
+  createdAt DateTime   @default(now())
+
+  users      User[]
+  documents  Document[]
+  queries    Query[]
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  role         Role         @default(MEMBER)
+  createdAt    DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  documents Document[]  @relation("UploadedBy")
+  queries   Query[]
+
+  @@index([organizationId])
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  filePath     String
+  status       String   @default("processing") // processing | ready | failed
+  createdAt    DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  uploadedBy   User   @relation("UploadedBy", fields: [uploadedById], references: [id])
+  uploadedById String
+
+  chunks Chunk[]
+
+  @@index([organizationId])
+}
+
+model Chunk {
+  id         String  @id @default(uuid())
+  text       String
+  page       Int?
+  qdrantId   String  @unique  // ID of the corresponding vector in Qdrant
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String
+
+  organizationId String  // denormalized for fast filtering/queries
+
+  @@index([organizationId])
+  @@index([documentId])
+}
+
+model Query {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  askedBy   User   @relation(fields: [askedById], references: [id])
+  askedById String
+
+  @@index([organizationId])
+}
