@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "prisma generate",
     "test": "jest --runInBand",
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
@@ -14,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.19.3",
     "@qdrant/js-client-rest": "^1.19.0",
     "bcrypt": "^6.0.0",
@@ -26,7 +24,7 @@
     "ms": "^2.1.3",
     "multer": "^2.2.0",
     "openai": "^7.4.0",
-    "pdf-parse": "^1.1.1",
+    "pdf-parse": "^2.4.5",
     "prisma": "^6.19.3",
     "uuid": "^14.0.1",
     "zod": "^4.4.3"
@@ -39,10 +37,11 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/ms": "^2.1.0",
     "@types/multer": "^2.2.0",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.1.1",
     "@types/pdf-parse": "^1.1.5",
     "@types/pg": "^8.20.0",
     "@types/supertest": "^7.2.1",
+    "@types/uuid": "^10.0.0",
     "jest": "^30.4.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",

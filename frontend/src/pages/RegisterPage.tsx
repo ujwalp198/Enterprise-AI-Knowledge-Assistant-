@@ -1,0 +1,70 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { registerRequest } from '../services/auth.service';
+import { useAuth } from '../context/AuthContext';
+
+export default function RegisterPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [orgName, setOrgName] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    try {
+      const data = await registerRequest({ email, password, orgName });
+      login(data.accessToken, data.refreshToken);
+      navigate('/dashboard');
+    } catch (error) {
+      const err = error as any;
+      setError(err.response?.data?.error || 'Registration failed');
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold mb-6">Create Organization</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Organization Name"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            Register
+          </button>
+        </form>
+        <p className="mt-4 text-sm">
+          Already have an account? <Link to="/login" className="text-blue-600">Log In</Link>
+        </p>
+      </div>
+    </div>
+  );
+}

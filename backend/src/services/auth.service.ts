@@ -77,6 +77,32 @@ export async function loginUser({ email, password }: LoginInput) {
   return { user, ...tokens };
 }
 
+interface InviteMemberInput {
+  email: string;
+  password: string;
+  organizationId: string;
+}
+
+export async function inviteMember({ email, password, organizationId }: InviteMemberInput) {
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (existingUser) {
+    throw new Error('User with this email already exists');
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      passwordHash,
+      role: 'MEMBER',
+      organizationId,
+    },
+  });
+
+  return user;
+}
+
 export function verifyRefreshToken(token: string): { userId: string } {
   return jwt.verify(token, JWT_REFRESH_SECRET) as { userId: string };
 }
@@ -91,4 +117,17 @@ export async function refreshAccessToken(refreshToken: string) {
 
   const tokens = generateTokens(user.id, user.organizationId, user.role);
   return tokens;
+}
+
+export async function listOrgUsers(organizationId: string) {
+  return prisma.user.findMany({
+    where: { organizationId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'asc' },
+  });
 }

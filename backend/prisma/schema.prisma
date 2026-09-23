@@ -61,7 +61,7 @@ model Chunk {
   id         String  @id @default(uuid())
   text       String
   page       Int?
-  qdrantId   String  @unique  // ID of the corresponding vector in Qdrant
+  qdrantId   String?  // ID of the corresponding vector in Qdrant — populated on embedding (Day 8)
 
   document   Document @relation(fields: [documentId], references: [id])
   documentId String
